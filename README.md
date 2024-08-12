@@ -19,8 +19,8 @@ const myQuery = build((args: { my_id: string }) => ({
 ```
 
 ```graphql
-query($my_id: String!) {
-  tweet() {
+query ($my_id: ID!) {
+  tweet(id: $my_id) {
     date
     my_body: body
     my_author: author {
