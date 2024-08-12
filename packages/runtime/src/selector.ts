@@ -13,7 +13,7 @@ export type Selector<T> =
             __args?: Args;
           } & Selector<Result>
         : {
-            __args?: Args;
+            __args: Args;
           } & Selector<Result>
       : T extends object
         ? {
