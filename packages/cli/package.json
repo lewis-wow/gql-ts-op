@@ -1,0 +1,27 @@
+{
+  "name": "@gql-ts-op/cli",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc --build"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@graphql-codegen/core": "^4.0.2",
+    "@graphql-codegen/plugin-helpers": "^5.0.4",
+    "@graphql-codegen/typescript": "^4.0.9",
+    "@graphql-tools/utils": "^10.5.1",
+    "@graphql-tools/wrap": "^10.0.5",
+    "gqty": "^3.2.0",
+    "graphql": "^16.9.0",
+    "lodash": "^4.17.21",
+    "prettier": "^3.2.5"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.7",
+    "@types/node": "^22.2.0"
+  }
+}
