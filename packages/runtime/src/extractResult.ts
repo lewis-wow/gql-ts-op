@@ -1,4 +1,5 @@
-import { IsAny, Primitive, SpecialSelector__as, SpecialSelectors } from './types';
+import { Alias } from './as';
+import { IsAny, Primitive, SpecialSelectors } from './types';
 
 export type ExtractResult<TOperationDefinition, TSchema> =
   IsAny<TSchema> extends true
@@ -10,8 +11,8 @@ export type ExtractResult<TOperationDefinition, TSchema> =
           ? {
               [K in keyof TSchema as K extends keyof Omit<TOperationDefinition, SpecialSelectors>
                 ? TOperationDefinition[K] extends object
-                  ? TOperationDefinition[K] extends { __as: string }
-                    ? TOperationDefinition[K][SpecialSelector__as]
+                  ? TOperationDefinition[K] extends Alias<infer As, any>
+                    ? As
                     : K
                   : TOperationDefinition[K] extends true
                     ? K
@@ -22,12 +23,17 @@ export type ExtractResult<TOperationDefinition, TSchema> =
             }
           : {
               [K in keyof Omit<TOperationDefinition, SpecialSelectors> as TOperationDefinition[K] extends object
-                ? TOperationDefinition[K] extends { __as: string }
-                  ? TOperationDefinition[K][SpecialSelector__as]
+                ? TOperationDefinition[K] extends Alias<infer As, any>
+                  ? As
                   : K
                 : TOperationDefinition[K] extends true
                   ? K
-                  : never]: K extends keyof TSchema ? ExtractResult<TOperationDefinition[K], TSchema[K]> : never;
+                  : never]: K extends keyof TSchema
+                ? ExtractResult<
+                    TOperationDefinition[K] extends Alias<any, infer AliasValue> ? AliasValue : TOperationDefinition[K],
+                    TSchema[K]
+                  >
+                : never;
             }
         : TSchema;
 

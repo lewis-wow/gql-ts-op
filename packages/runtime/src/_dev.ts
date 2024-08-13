@@ -1,3 +1,4 @@
+import { as } from './as';
 import { createBuilder } from './main';
 
 const { build } = createBuilder<{
@@ -29,9 +30,10 @@ const query = build((args: { my_id: string }) => ({
         id: args.my_id,
       },
       __scalar: true,
-      authors: {
+      id: as('my_dd'),
+      authors: as('a', {
         __scalar: true,
-      },
+      }),
     },
   },
 }));
