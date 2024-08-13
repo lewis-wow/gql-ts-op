@@ -29,13 +29,14 @@ const query = build((args: { my_id: string }) => ({
       __args: {
         id: args.my_id,
       },
-      __scalar: true,
-      id: as('my_dd'),
-      authors: as('a', {
-        __scalar: true,
+      date: true,
+      body: as('my_body'),
+      author: as('my_author', {
+        name: true,
+        id: false,
       }),
     },
   },
 }));
 
-console.log((query as any).query.tweet);
+console.log(JSON.stringify(query as any));

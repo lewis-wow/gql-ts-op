@@ -18,6 +18,19 @@ const myQuery = build((args: { my_id: string }) => ({
 }));
 ```
 
+```json
+{
+  "query": {
+    "tweet": {
+      "__args": { "id": { "__variableName": "my_id" } },
+      "date": true,
+      "body": { "__as": "my_body", "value": true },
+      "author": { "__as": "my_author", "value": { "name": true, "id": false } }
+    }
+  }
+}
+```
+
 ```graphql
 query ($my_id: ID!) {
   tweet(id: $my_id) {
