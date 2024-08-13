@@ -3,13 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "tsc --build"
+    "build": "tsc --build",
+    "dev": "ts-node src/_dev.ts"
   },
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
   "devDependencies": {
-    "@graphql-typed-document-node/core": "^3.2.0"
+    "@graphql-typed-document-node/core": "^3.2.0",
+    "ts-node": "^10.9.2"
   }
 }

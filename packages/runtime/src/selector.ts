@@ -18,5 +18,7 @@ export type Selector<T> =
       : T extends object
         ? {
             [K in keyof T]?: Selector<T[K]>;
+          } & {
+            __scalar?: FieldSelector;
           }
         : FieldSelector;

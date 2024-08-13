@@ -11,9 +11,7 @@ export const createBuilder = <TSchema>() => {
       const result = builder(createVariablesProxy() as TVariables);
 
       // TODO
-      console.log((result as any).query.Tweet);
-
-      return null as any;
+      return result as any;
     },
   };
 };

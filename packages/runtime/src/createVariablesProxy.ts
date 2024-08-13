@@ -1,5 +1,7 @@
 export const createVariablesProxy = (property?: string) => {
-  const proxy = new Proxy(
+  const proxy: {
+    __variableName: string | undefined;
+  } = new Proxy(
     {
       __variableName: property,
     },
