@@ -6,7 +6,7 @@ export type ExtractResult<TOperationDefinition, TSchema> =
     ? TSchema
     : TSchema extends (args: any) => infer Result
       ? ExtractResult<TOperationDefinition, Result>
-      : TSchema extends object
+      : TSchema extends object | any[]
         ? TOperationDefinition extends { __scalar: true }
           ? {
               [K in keyof TSchema as K extends keyof Omit<TOperationDefinition, SpecialSelectors>

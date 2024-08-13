@@ -18,7 +18,7 @@ const { build } = createBuilder<{
         age: string;
         createdAt: any;
         updatedAt: any;
-      };
+      }[];
     };
   };
 }>();

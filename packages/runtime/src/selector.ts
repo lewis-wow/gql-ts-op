@@ -16,10 +16,12 @@ export type Selector<T> =
         : {
             __args: Args;
           } & Selector<Result>
-      : T extends object
-        ? {
-            [K in keyof T]?: Selector<T[K]> | Alias<string, Selector<T[K]>>;
-          } & {
-            __scalar?: FieldSelector;
-          }
-        : FieldSelector;
+      : T extends any[]
+        ? Selector<T[number]>
+        : T extends object
+          ? {
+              [K in keyof T]?: Selector<T[K]> | Alias<string, Selector<T[K]>>;
+            } & {
+              __scalar?: FieldSelector;
+            }
+          : FieldSelector;
