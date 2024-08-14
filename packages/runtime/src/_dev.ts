@@ -29,10 +29,10 @@ const query = build((args: { my_id: string }) => ({
       __args: {
         id: args.my_id,
       },
-      date: true,
-      body: as('my_body'),
-      author: as('my_author', {
-        name: true,
+      __scalar: true,
+      createdAt: false,
+      authors: as('my_author', {
+        username: true,
         id: false,
       }),
     },

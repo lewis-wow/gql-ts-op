@@ -1,4 +1,4 @@
-import { Alias } from './as';
+import { As } from './as';
 import { IsAny } from './types';
 
 export type MatchFieldSelector = true;
@@ -20,7 +20,7 @@ export type Selector<T> =
         ? Selector<T[number]>
         : T extends object
           ? {
-              [K in keyof T]?: Selector<T[K]> | Alias<string, Selector<T[K]>>;
+              [K in keyof T]?: Selector<T[K]> | As<string, Selector<T[K]>>;
             } & {
               __scalar?: FieldSelector;
             }

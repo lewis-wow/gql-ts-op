@@ -1,20 +1,20 @@
-export class Variable {
+export type Variable = {
   __variableName: string;
+  __variableType: string;
+};
 
-  constructor(options: { name: string }) {
-    this.__variableName = options.name;
-  }
+export const createVariablesProxy = () => {
+  const proxy = new Proxy(
+    {},
+    {
+      get: (_target, property: string) => {
+        return {
+          __variableName: property,
+          __variableType: property,
+        };
+      },
+    }
+  );
 
-  static createProxy() {
-    const proxy = new Proxy(
-      {},
-      {
-        get: (_target, property: string) => {
-          return new Variable({ name: property });
-        },
-      }
-    );
-
-    return proxy;
-  }
-}
+  return proxy;
+};

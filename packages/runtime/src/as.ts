@@ -1,33 +1,28 @@
-export type AliasNameMustHaveLength = 'Alias name must have length';
+import { ErrorMessage } from './types';
 
-export type AliasCannotHaveAliasAsValueError = 'Alias cannot have Alias as value';
+export type AsAliasCheck<TAlias extends string> = TAlias extends ''
+  ? ErrorMessage<'Alias name must have length'>
+  : TAlias;
 
-export class Alias<TAlias extends string, TValue> {
-  __as: TAlias;
-  value: TValue;
+export type AsValueCheck<TValue> =
+  TValue extends As<string, any> ? ErrorMessage<'Alias cannot have Alias as value'> : TValue;
 
-  constructor(options: {
-    alias: TAlias extends '' ? AliasNameMustHaveLength : TAlias;
-    value: TValue extends Alias<string, any> ? AliasCannotHaveAliasAsValueError : TValue;
-  }) {
-    this.__as = options.alias as TAlias;
-    this.value = options.value as TValue;
-  }
-}
+export type As<TAlias extends string, TValue> = {
+  __as: AsAliasCheck<TAlias>;
+  value: AsValueCheck<TValue>;
+};
 
 export function as<TAlias extends string, TValue>(
-  alias: TAlias extends '' ? AliasNameMustHaveLength : TAlias,
-  value: TValue extends Alias<string, any> ? AliasCannotHaveAliasAsValueError : TValue
-): Alias<TAlias, TValue>;
-export function as<TAlias extends string>(
-  alias: TAlias extends '' ? AliasNameMustHaveLength : TAlias
-): Alias<TAlias, true>;
+  alias: AsAliasCheck<TAlias>,
+  value: AsValueCheck<TValue>
+): As<TAlias, TValue>;
+export function as<TAlias extends string>(alias: AsAliasCheck<TAlias>): As<TAlias, true>;
 export function as<TAlias extends string, TValue>(
-  alias: TAlias extends '' ? AliasNameMustHaveLength : TAlias,
-  value?: TValue extends Alias<string, any> ? AliasCannotHaveAliasAsValueError : TValue
-): Alias<TAlias, TValue> {
-  return new Alias<TAlias, TValue>({
-    alias,
-    value: (value ?? true) as TValue extends Alias<string, any> ? AliasCannotHaveAliasAsValueError : TValue,
-  });
+  alias: AsAliasCheck<TAlias>,
+  value?: AsValueCheck<TValue>
+): As<TAlias, TValue> {
+  return {
+    __as: alias,
+    value: (value ?? true) as AsValueCheck<TValue>,
+  };
 }

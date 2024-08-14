@@ -16,3 +16,9 @@ export type SpecialSelectors = SpecialSelector__args | SpecialSelector__as | Spe
  * Matches any [primitive value](https://developer.mozilla.org/en-US/docs/Glossary/Primitive).
  */
 export type Primitive = null | undefined | string | number | boolean | symbol | bigint;
+
+export const GQL_TS_OP_ErrorMessageSymbol: unique symbol = Symbol('GQL_TS_OP_ErrorMessageSymbol');
+
+export type ErrorMessage<T extends string> = T & {
+  __error: typeof GQL_TS_OP_ErrorMessageSymbol;
+};

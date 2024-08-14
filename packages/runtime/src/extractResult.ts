@@ -1,58 +1,53 @@
-import { Alias } from './as';
-import { IsAny, Primitive, SpecialSelectors } from './types';
+import { As } from './as';
+import { ErrorMessage, IsAny, Primitive } from './types';
 
 export type ExtractResult<TOperationDefinition, TSchema> =
   IsAny<TSchema> extends true
     ? TSchema
     : TSchema extends (args: any) => infer Result
       ? ExtractResult<TOperationDefinition, Result>
-      : TSchema extends object | any[]
-        ? TOperationDefinition extends { __scalar: true }
-          ? {
-              [K in keyof TSchema as K extends keyof Omit<TOperationDefinition, SpecialSelectors>
-                ? TOperationDefinition[K] extends object
-                  ? TOperationDefinition[K] extends Alias<infer As, any>
-                    ? As
+      : TSchema extends any[]
+        ? ExtractResult<TOperationDefinition, TSchema[number]>[]
+        : TSchema extends object
+          ? TOperationDefinition extends { __scalar: true }
+            ? {
+                [K in keyof TSchema as K extends keyof TOperationDefinition
+                  ? TOperationDefinition[K] extends true
+                    ? K
+                    : never
+                  : TSchema[K] extends Primitive
+                    ? K
+                    : never]: TSchema[K];
+              } & ExtractResult<Omit<TOperationDefinition, '__scalar'>, TSchema>
+            : {
+                [K in keyof Omit<TOperationDefinition, '__args' | '__as'> as TOperationDefinition[K] extends object
+                  ? TOperationDefinition[K] extends As<infer AliasName, infer AliasValue>
+                    ? AliasValue extends object | true
+                      ? AliasName
+                      : never
                     : K
                   : TOperationDefinition[K] extends true
                     ? K
-                    : never
-                : TSchema[K] extends Primitive
-                  ? K
-                  : never]: TSchema[K];
-            }
-          : {
-              [K in keyof Omit<TOperationDefinition, SpecialSelectors> as TOperationDefinition[K] extends object
-                ? TOperationDefinition[K] extends Alias<infer As, any>
-                  ? As
-                  : K
-                : TOperationDefinition[K] extends true
-                  ? K
-                  : never]: K extends keyof TSchema
-                ? ExtractResult<
-                    TOperationDefinition[K] extends Alias<any, infer AliasValue> ? AliasValue : TOperationDefinition[K],
-                    TSchema[K]
-                  >
-                : never;
-            }
-        : TSchema;
+                    : never]: K extends keyof TSchema
+                  ? ExtractResult<
+                      TOperationDefinition[K] extends As<any, infer AliasValue> ? AliasValue : TOperationDefinition[K],
+                      TSchema[K]
+                    >
+                  : ErrorMessage<'Operation defintion key does not exists in Schema'>;
+              }
+          : TSchema;
 
-/*
 type Test = ExtractResult<
   {
     tweet: {
       __args: {
         id: string;
       };
-      date: true;
-      id: false;
-      author: As<
-        'my_author',
-        {
-          id: true;
-          name: 'author_name';
-        }
-      >;
+      __scalar: true;
+      author: {
+        id: true;
+        name: 'author_name';
+      };
     };
   },
   {
@@ -63,11 +58,10 @@ type Test = ExtractResult<
         name: string;
         id: string;
         age: number;
-      };
+      }[];
     };
   }
 >;
-*/
 
 /*
 type Test = ExtractResult<
