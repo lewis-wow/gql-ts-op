@@ -1,13 +1,10 @@
 import { As } from './as';
+import { Falsy, Truthy } from './fieldsSelection';
 import { IsAny } from './types';
-
-export type MatchFieldSelector = true;
-
-export type FieldSelector = MatchFieldSelector | false | undefined | null;
 
 export type Selector<T> =
   IsAny<T> extends true
-    ? FieldSelector
+    ? Falsy | Truthy
     : T extends (args: infer Args) => infer Result
       ? undefined extends Args
         ? {
@@ -22,6 +19,6 @@ export type Selector<T> =
           ? {
               [K in keyof T]?: Selector<T[K]> | As<string, Selector<T[K]>>;
             } & {
-              __scalar?: FieldSelector;
+              __scalar?: Falsy | Truthy;
             }
-          : FieldSelector;
+          : Falsy | Truthy;
