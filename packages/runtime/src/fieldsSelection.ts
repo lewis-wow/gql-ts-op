@@ -1,5 +1,5 @@
 import { As } from './as';
-import { Simplify } from './types';
+import { Simplify, EmptyObject } from './types';
 
 export type FieldsSelection<TSchema, TOperationDefition> = {
   scalar: TSchema;
@@ -13,23 +13,28 @@ export type FieldsSelection<TSchema, TOperationDefition> = {
       : never;
   __scalar: Simplify<Handle__scalar<TSchema, TOperationDefition>>;
   never: never;
+  nullable: FieldsSelection<NonNullable<TSchema>, TOperationDefition> | Nil;
 }[TOperationDefition extends Nil
   ? 'never'
   : TOperationDefition extends Falsy
     ? 'never'
-    : TSchema extends Scalar
-      ? 'scalar'
-      : TSchema extends (args?: any) => any
-        ? 'method'
-        : TSchema extends any[]
-          ? 'array'
-          : TSchema extends { __isUnion?: any }
-            ? 'union'
-            : TOperationDefition extends { __scalar?: any }
-              ? '__scalar'
-              : TOperationDefition extends {}
-                ? 'object'
-                : 'never'];
+    : null extends TSchema
+      ? 'nullable'
+      : undefined extends TSchema
+        ? 'nullable'
+        : TSchema extends Scalar
+          ? 'scalar'
+          : TSchema extends (args?: any) => any
+            ? 'method'
+            : TSchema extends any[]
+              ? 'array'
+              : TSchema extends { __isUnion?: any }
+                ? 'union'
+                : TOperationDefition extends { __scalar?: any }
+                  ? '__scalar'
+                  : TOperationDefition extends {}
+                    ? 'object'
+                    : 'never'];
 
 type HandleObject<TSchema extends Anify<TOperation>, TOperation> = TOperation extends boolean
   ? TSchema
@@ -44,8 +49,8 @@ type HandleObject<TSchema extends Anify<TOperation>, TOperation> = TOperation ex
               : K
             : K]: K extends keyof TOperation
             ? TOperation[K] extends As<any, infer AliasValue>
-              ? FieldsSelection<TSchema[K], NonNullable<AliasValue>>
-              : FieldsSelection<TSchema[K], NonNullable<TOperation[K]>>
+              ? FieldsSelection<TSchema[K], AliasValue>
+              : FieldsSelection<TSchema[K], TOperation[K]>
             : TSchema[K];
         },
         Exclude<
@@ -62,40 +67,42 @@ type HandleObject<TSchema extends Anify<TOperation>, TOperation> = TOperation ex
         >
       >;
 
-type Handle__scalar<TSchema extends Anify<TOperation>, TOperation> = TSchema extends Nil
-  ? never
-  : Pick<
-      // continue processing fields that are in TOperation, directly pass TSchema type if not in TOperation
-      {
-        [K in keyof TSchema as K extends keyof TOperation
-          ? TOperation[K] extends As<infer AliasName, any>
-            ? AliasName
-            : K
-          : K]: K extends keyof TOperation
-          ? TOperation[K] extends As<string, infer AliasValue>
-            ? FieldsSelection<TSchema[K], AliasValue>
-            : FieldsSelection<TSchema[K], TOperation[K]>
-          : TSchema[K];
-      },
-      // remove fields that are not scalars or are not in TOperation
-      keyof {
-        [K in keyof TSchema as TSchema[K] extends Nil
-          ? never
-          : K extends FieldsToRemove
+type Handle__scalar<TSchema extends Anify<TOperation>, TOperation> = TOperation extends EmptyObject
+  ? {}
+  : TSchema extends Nil
+    ? never
+    : Pick<
+        // continue processing fields that are in TOperation, directly pass TSchema type if not in TOperation
+        {
+          [K in keyof TSchema as K extends keyof TOperation
+            ? TOperation[K] extends As<infer AliasName, any>
+              ? AliasName
+              : K
+            : K]: K extends keyof TOperation
+            ? TOperation[K] extends As<string, infer AliasValue>
+              ? FieldsSelection<TSchema[K], AliasValue>
+              : FieldsSelection<TSchema[K], TOperation[K]>
+            : TSchema[K];
+        },
+        // remove fields that are not scalars or are not in TOperation
+        keyof {
+          [K in keyof TSchema as TSchema[K] extends Nil
             ? never
-            : K extends keyof TOperation
-              ? TOperation[K] extends As<infer AliasName, infer AliasValue>
-                ? AliasValue extends Falsy
-                  ? never
-                  : AliasName
-                : TOperation[K] extends Falsy
-                  ? never
-                  : K
-              : TSchema[K] extends Scalar
-                ? K
-                : never]: any;
-      }
-    >;
+            : K extends FieldsToRemove
+              ? never
+              : K extends keyof TOperation
+                ? TOperation[K] extends As<infer AliasName, infer AliasValue>
+                  ? AliasValue extends Falsy
+                    ? never
+                    : AliasName
+                  : TOperation[K] extends Falsy
+                    ? never
+                    : K
+                : TSchema[K] extends Scalar
+                  ? K
+                  : never]: any;
+        }
+      >;
 
 type Handle__isUnion<TSchema extends Anify<TOperation>, TOperation> = TSchema extends Nil
   ? never

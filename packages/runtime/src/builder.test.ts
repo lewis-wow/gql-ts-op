@@ -11,16 +11,11 @@ const testQuery = query(($) => ({
     __args: {
       id: $('id'),
     },
-    id: true,
-    author: {
-      __args: {
-        filter: $('filter!'),
-      },
-    },
+    __scalar: true,
   },
 }));
 
 type TestQueryResult = ResultOf<typeof testQuery>;
 type TestQueryVariables = VariablesOf<typeof testQuery>;
 
-type TestIdQueryResult = NonNullable<TestQueryResult['tweet']>['id'];
+type TestIdQueryResult = NonNullable<TestQueryResult['tweet']>;
