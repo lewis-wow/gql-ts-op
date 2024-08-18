@@ -3,7 +3,7 @@ import { GQLBuilder } from './main';
 
 type Schema = {
   query: {
-    tweet: (args: { id: string }) => {
+    tweet: (args: { id?: string }) => {
       id: string;
       content: {
         header: any;
@@ -30,18 +30,8 @@ const f = mutation(() => ({}));
 const myQuery = query(($) => ({
   tweet: {
     __args: {
-      id: $('my_id'),
+      id: $('my_id!'),
     },
-    __scalar: true,
-    createdAt: false,
-    authors: as('my_author', {
-      __args: {
-        filter: $('my_filter'),
-      },
-      username: true,
-      __scalar: true,
-      id: false,
-    }),
   },
 }));
 
