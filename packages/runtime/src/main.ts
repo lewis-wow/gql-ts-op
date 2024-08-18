@@ -3,33 +3,37 @@ import { FieldsSelector } from './fieldsSelector';
 import { FieldsSelection } from './fieldsSelection';
 import { $variable } from './variable';
 import { VariableSelection } from './variableSelection';
+import { EmptyObject } from './types';
 
-export type BuilderFn<TSchemaOperation, TSelect> = undefined extends TSchemaOperation
-  ? undefined
-  : ($: typeof $variable) => TSelect;
+export type BuilderFn<TSelect> = ($: typeof $variable) => TSelect;
 
-export class GQLBuilder<TSchema extends { query?: any; mutation?: any; subscription?: any }> {
-  query<const TSelect extends FieldsSelector<TSchema['query']>, TVariables extends object = {}>(
-    builderFn: BuilderFn<TSchema['query'], TSelect>
-  ): TypedDocumentNode<VariableSelection<TSelect>, FieldsSelection<TSchema['query'], TSelect>> {
+type RootTypeKeyWrapper<TSchema, TKey extends string> = TKey extends keyof TSchema ? TSchema[TKey] : EmptyObject;
+
+export class GQLBuilder<TSchema extends {}> {
+  query<TSelect extends FieldsSelector<RootTypeKeyWrapper<TSchema, 'query'>>>(
+    builderFn: BuilderFn<TSelect>
+  ): TypedDocumentNode<VariableSelection<TSelect>, FieldsSelection<RootTypeKeyWrapper<TSchema, 'query'>, TSelect>> {
     const result = builderFn?.($variable);
 
     // TODO
     return result as any;
   }
 
-  mutation<const TSelect extends FieldsSelector<TSchema['mutation']>, TVariables extends object = {}>(
-    builderFn: undefined extends TSchema['mutation'] ? undefined : (variables: TVariables) => TSelect
-  ): TypedDocumentNode<TVariables, FieldsSelection<TSchema['mutation'], TSelect>> {
+  mutation<TSelect extends FieldsSelector<RootTypeKeyWrapper<TSchema, 'mutation'>>>(
+    builderFn: BuilderFn<TSelect>
+  ): TypedDocumentNode<VariableSelection<TSelect>, FieldsSelection<RootTypeKeyWrapper<TSchema, 'mutation'>, TSelect>> {
     const result = builderFn?.($variable);
 
     // TODO
     return result as any;
   }
 
-  subscription<const TSelect extends FieldsSelector<TSchema['subscription']>, TVariables extends object = {}>(
-    builderFn: undefined extends TSchema['subscription'] ? undefined : (variables: TVariables) => TSelect
-  ): TypedDocumentNode<TVariables, FieldsSelection<TSchema['subscription'], TSelect>> {
+  subscription<TSelect extends FieldsSelector<RootTypeKeyWrapper<TSchema, 'subscription'>>>(
+    builderFn: BuilderFn<TSelect>
+  ): TypedDocumentNode<
+    VariableSelection<TSelect>,
+    FieldsSelection<RootTypeKeyWrapper<TSchema, 'subscription'>, TSelect>
+  > {
     const result = builderFn?.($variable);
 
     // TODO

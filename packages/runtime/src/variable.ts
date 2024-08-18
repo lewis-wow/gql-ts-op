@@ -1,9 +1,9 @@
 import { ErrorMessage } from './types';
 
-export type Variable<TType, TVariableName extends string, TIsRequired extends boolean> = {
+export type Variable<TType, TVariableName extends string> = {
   __variableName: TVariableName;
-  __isRequired: TIsRequired;
   __isVariable: true;
+  __isRequired: boolean;
 
   /**
    * TypeScript only property - no runtime
@@ -26,14 +26,13 @@ type ValidVariableName<T extends string> = T extends ''
 export const $variable = <TType, TVariableName extends string>(
   variableName: ValidVariableName<TVariableName>
 ): Variable<
-  TType,
-  TVariableName extends `${infer T}!` ? T : TVariableName,
-  TVariableName extends `${string}!` ? true : false
+  TVariableName extends `${string}!` ? NonNullable<TType> : TType,
+  TVariableName extends `${infer T}!` ? T : TVariableName
 > => ({
   __variableName: variableName.replace('!', '') as TVariableName extends `${infer T}!` ? T : TVariableName,
-  __isRequired: variableName.includes('!') as TVariableName extends `${string}!` ? true : false,
   __isVariable: true,
+  __isRequired: variableName.includes('!'),
 
   // TypeScript only property - no runtime
-  __type: undefined as TType,
+  __type: undefined as TVariableName extends `${string}!` ? NonNullable<TType> : TType,
 });

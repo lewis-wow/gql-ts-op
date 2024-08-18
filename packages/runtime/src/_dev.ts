@@ -25,6 +25,8 @@ type Schema = {
 
 const { query, mutation } = new GQLBuilder<Schema>();
 
+const f = mutation(() => ({}));
+
 const myQuery = query(($) => ({
   tweet: {
     __args: {
@@ -33,6 +35,9 @@ const myQuery = query(($) => ({
     __scalar: true,
     createdAt: false,
     authors: as('my_author', {
+      __args: {
+        filter: $('my_filter'),
+      },
       username: true,
       __scalar: true,
       id: false,

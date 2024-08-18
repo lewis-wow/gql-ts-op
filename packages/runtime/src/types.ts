@@ -14,3 +14,5 @@ export type ErrorMessage<T extends string> = T & {
 
 declare const emptyObjectSymbol: unique symbol;
 export type EmptyObject = { [emptyObjectSymbol]?: never };
+
+export type ObjectValues<T> = T extends EmptyObject ? {} : T[keyof T];

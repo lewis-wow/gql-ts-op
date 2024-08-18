@@ -1,14 +1,14 @@
 import { As } from './as';
-import { FieldsToRemove, Nil } from './fieldsSelection';
-import { EmptyObject, Simplify } from './types';
+import { Falsy, FieldsToRemove, Truthy } from './fieldsSelection';
+import { EmptyObject, ObjectValues, Simplify } from './types';
 import { Variable } from './variable';
 
 export type VariableSelection<TOperation> = {
   __args: Simplify<Handle__args<TOperation>>;
-  object: HandleObject<TOperation>;
+  object: HandleObject<Omit<TOperation, FieldsToRemove>>;
   alias: TOperation extends As<string, infer AliasValue> ? VariableSelection<AliasValue> : never;
   never: {};
-}[TOperation extends Nil
+}[TOperation extends Truthy | Falsy
   ? 'never'
   : TOperation extends EmptyObject
     ? 'never'
@@ -20,27 +20,21 @@ export type VariableSelection<TOperation> = {
           ? 'object'
           : 'never'];
 
-type HandleObject<TOperation> =
-  Omit<TOperation, FieldsToRemove> extends EmptyObject
-    ? {}
-    : {
-        [K in keyof Omit<TOperation, FieldsToRemove>]: VariableSelection<TOperation[K]>;
-      }[keyof Omit<TOperation, FieldsToRemove>];
+type HandleObject<TOperation> = ObjectValues<
+  Pick<
+    {
+      [K in keyof TOperation]: VariableSelection<TOperation[K]>;
+    },
+    keyof {
+      [K in keyof TOperation as TOperation[K] extends Truthy | Falsy ? never : K]: any;
+    }
+  >
+>;
 
 type Handle__args<TOperation> = TOperation extends { __args?: any }
   ? {
-      [K in keyof TOperation['__args'] as TOperation['__args'][K] extends Variable<any, infer VariableName, boolean>
+      [K in keyof TOperation['__args'] as TOperation['__args'][K] extends Variable<any, infer VariableName>
         ? VariableName
-        : never]: TOperation['__args'][K] extends Variable<infer VariableType, string, boolean> ? VariableType : never;
-    } & HandleObject<TOperation>
+        : never]: TOperation['__args'][K] extends Variable<infer VariableType, string> ? VariableType : never;
+    } & HandleObject<Omit<TOperation, FieldsToRemove>>
   : {};
-
-type Test = VariableSelection<{
-  tweet: {
-    __args: {
-      id: Variable<string, 'my_id', false>;
-    };
-    __scalar: true;
-    createdAt: false;
-  };
-}>;
