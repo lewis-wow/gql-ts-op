@@ -11,3 +11,6 @@ export const GQL_TS_OP_ErrorMessageSymbol: unique symbol = Symbol('GQL_TS_OP_Err
 export type ErrorMessage<T extends string> = T & {
   __error: typeof GQL_TS_OP_ErrorMessageSymbol;
 };
+
+declare const emptyObjectSymbol: unique symbol;
+export type EmptyObject = { [emptyObjectSymbol]?: never };

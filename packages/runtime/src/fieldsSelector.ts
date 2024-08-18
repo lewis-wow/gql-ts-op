@@ -1,6 +1,7 @@
 import { As } from './as';
 import { Falsy, Truthy } from './fieldsSelection';
 import { IsAny } from './types';
+import { Variable } from './variable';
 
 export type FieldsSelector<T> =
   IsAny<T> extends true
@@ -8,10 +9,10 @@ export type FieldsSelector<T> =
     : T extends (args: infer Args) => infer Result
       ? (undefined extends Args
           ? {
-              __args?: Args;
+              __args?: { [K in keyof Args]: Variable<Args[K], string, boolean> };
             }
           : {
-              __args: Args;
+              __args: { [K in keyof Args]: Variable<Args[K], string, boolean> };
             }) &
           FieldsSelector<Result>
       : T extends any[]

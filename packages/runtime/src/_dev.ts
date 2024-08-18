@@ -1,7 +1,7 @@
 import { as } from './as';
 import { GQLBuilder } from './main';
 
-const { query } = new GQLBuilder<{
+type Schema = {
   query: {
     tweet: (args: { id: string }) => {
       id: string;
@@ -21,12 +21,14 @@ const { query } = new GQLBuilder<{
       }[];
     };
   };
-}>();
+};
 
-const myQuery = query((args: { my_id: string }) => ({
+const { query, mutation } = new GQLBuilder<Schema>();
+
+const myQuery = query(($) => ({
   tweet: {
     __args: {
-      id: args.my_id,
+      id: $('my_id'),
     },
     __scalar: true,
     createdAt: false,
