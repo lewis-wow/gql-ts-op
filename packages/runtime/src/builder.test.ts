@@ -1,8 +1,10 @@
 import { GeneratedSchema } from './__test__/schema.generated';
-import { GQLBuilder } from './builder';
+import { createGraphQLDocumentBuilder } from './builder';
 import { ResultOf, VariablesOf } from '@graphql-typed-document-node/core';
 
-const { query } = new GQLBuilder<GeneratedSchema>();
+const { query } = createGraphQLDocumentBuilder<GeneratedSchema>({
+  generatedSchema: {},
+});
 
 const testQuery = query(($) => ({
   tweet: {
