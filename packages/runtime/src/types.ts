@@ -6,17 +6,6 @@ export type Writable<T> = {
   -readonly [P in keyof T]: T[P];
 };
 
-export type SpecialSelector__args = '__args';
-export type SpecialSelector__as = '__as';
-export type SpecialSelector__scalar = '__scalar';
-
-export type SpecialSelectors = SpecialSelector__args | SpecialSelector__as | SpecialSelector__scalar;
-
-/**
- * Matches any [primitive value](https://developer.mozilla.org/en-US/docs/Glossary/Primitive).
- */
-export type Primitive = null | undefined | string | number | boolean | symbol | bigint;
-
 export const GQL_TS_OP_ErrorMessageSymbol: unique symbol = Symbol('GQL_TS_OP_ErrorMessageSymbol');
 
 export type ErrorMessage<T extends string> = T & {
