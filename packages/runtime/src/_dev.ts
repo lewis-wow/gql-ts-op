@@ -1,7 +1,7 @@
 import { as } from './as';
-import { createBuilder } from './main';
+import { GQLBuilder } from './main';
 
-const { build } = createBuilder<{
+const { query } = new GQLBuilder<{
   query: {
     tweet: (args: { id: string }) => {
       id: string;
@@ -23,20 +23,19 @@ const { build } = createBuilder<{
   };
 }>();
 
-const query = build((args: { my_id: string }) => ({
-  query: {
-    tweet: {
-      __args: {
-        id: args.my_id,
-      },
-      __scalar: true,
-      createdAt: false,
-      authors: as('my_author', {
-        username: true,
-        id: false,
-      }),
+const myQuery = query((args: { my_id: string }) => ({
+  tweet: {
+    __args: {
+      id: args.my_id,
     },
+    __scalar: true,
+    createdAt: false,
+    authors: as('my_author', {
+      username: true,
+      __scalar: true,
+      id: false,
+    }),
   },
 }));
 
-console.log(JSON.stringify(query as any));
+console.log(JSON.stringify(myQuery as any));
